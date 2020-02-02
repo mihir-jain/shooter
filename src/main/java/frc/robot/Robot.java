@@ -39,6 +39,7 @@ public class Robot extends TimedRobot {
   private boolean isUptoSpeed;
   private XboxController controller;
   private SpeedControllerGroup shooter;
+  private int RPMForLoop;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -58,8 +59,7 @@ public class Robot extends TimedRobot {
     isUptoSpeed = false;
     controller = new XboxController(0);
     shooter = new SpeedControllerGroup(LeftShooter, RightShooter);
-
-
+    RPMForLoop = 0;
   }
 
   /**
@@ -117,7 +117,13 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     if (controller.getAButton()){
-      if (RightEncoder.getVelocity() > 5400){
+      RPMForLoop = 5400;
+    }
+    if (controller.getYButton()){
+      RPMForLoop = 5200;
+    }
+    if (controller.getAButton() || controller.getYButton()){
+      if (RightEncoder.getVelocity() > RPMForLoop){
         isUptoSpeed = true;
       } else{
         isUptoSpeed = false;
@@ -141,8 +147,12 @@ public class Robot extends TimedRobot {
       
       m_kicker.set(1);
     } else {
+      if (RightEncoder.getVelocity() > 1000){
+        shooter.set(-0.1);
+      } else{
+        shooter.set(0);
+      }
       m_kicker.set(0);
-      shooter.set(0);
     }
   
     
